@@ -1,2 +1,61 @@
-<app-nx-welcome></app-nx-welcome>
-<router-outlet></router-outlet>
+
+<header class="cabecalho">
+  <div class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global"></div>
+  <div class="flex lg:flex-1">
+    <div class="-m-1.5 p-1.5">
+      <span class="sr-only">To Do List</span>
+    </div>
+  </div>
+</header>
+  <section class="fundo">
+
+
+    <!-- <div class="add-task">
+      <input [(ngModel)]="newTask" placeholder="Adicione uma Tarefa"/>
+      <button (click)="addTask()">Adicionar</button>
+    </div> -->
+
+    <!-- <ul class="task-list">
+      <li *ngFor="let todoItem of todoList;let i=index" [ngClass] = "{'completed':todoItem.completed}">
+        <input
+        type="checkbox"
+        [(checked)] = 'todoItem.completed'
+        (change)="toggleCompleted(i)"
+        />
+        <span [class.completed]="todoItem">{{todoItem.task}}</span>
+        <button (click)="deleteTask(todoItem.id)">Excluir</button>
+      </li>
+    </ul> -->
+
+
+    <div>
+    <div class="container mx-auto px-4 ">
+      <form class="mx-auto mt-16 max-w-xl sm:mt-20">
+
+        <div class="card">
+          <div class="card-body">
+            <div class="botao">
+            <div class="form-floating">
+              <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea"></textarea>
+              <label for="floatingTextarea">Descreva a Tarefa</label>
+            </div>
+            <button type="button" class="btn btn-success">Success</button>
+          </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  </section>
+
+  <footer>
+    <div class="rodape">
+<span>Desenvolvido por Pedro Fischer</span>
+    </div>
+  </footer>
+
+
+
+  <router-outlet></router-outlet>
+
+

@@ -21,8 +21,10 @@
             "input": "apps/ToDo-List/public"
           }
         ],
-        "styles": ["apps/ToDo-List/src/styles.css"],
-        "scripts": []
+        "styles": ["apps/ToDo-List/src/styles.css", "node_modules/bootstrap/dist/css/bootstrap.css"],
+        "scripts": [
+          "node_modules/bootstrap/dist/js/bootstrap.js"
+        ]
       },
       "configurations": {
         "production": {
