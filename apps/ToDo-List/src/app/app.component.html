@@ -1,21 +1,21 @@
-
 <header class="cabecalho">
-  <div class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global"></div>
+  <div
+    class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
+    aria-label="Global"
+  ></div>
   <div class="flex lg:flex-1">
     <div class="-m-1.5 p-1.5">
       <span class="sr-only">To Do List</span>
     </div>
   </div>
 </header>
-  <section class="fundo">
-
-
-    <!-- <div class="add-task">
+<section class="fundo">
+  <!-- <div class="add-task">
       <input [(ngModel)]="newTask" placeholder="Adicione uma Tarefa"/>
       <button (click)="addTask()">Adicionar</button>
     </div> -->
 
-    <!-- <ul class="task-list">
+  <!-- <ul class="task-list">
       <li *ngFor="let todoItem of todoList;let i=index" [ngClass] = "{'completed':todoItem.completed}">
         <input
         type="checkbox"
@@ -27,35 +27,116 @@
       </li>
     </ul> -->
 
-
-    <div>
-    <div class="container mx-auto px-4 ">
-      <form class="mx-auto mt-16 max-w-xl sm:mt-20">
-
+  <div>
+    <div class="container mx-auto px-4">
+      <form
+        (ngSubmit)="incluir()"
+        [formGroup]="tarefaForm"
+        class="mx-auto mt-16 max-w-xl sm:mt-20"
+      >
         <div class="card">
           <div class="card-body">
             <div class="botao">
-            <div class="form-floating">
-              <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea"></textarea>
-              <label for="floatingTextarea">Descreva a Tarefa</label>
+              <div class="form-floating">
+                <textarea
+                  formControlName="tarefa"
+                  class="form-control"
+                  placeholder="Leave a comment here"
+                  id="floatingTextarea"
+                ></textarea>
+                <label for="floatingTextarea">Descreva a Tarefa</label>
+              </div>
+              <button type="submit" class="btn btn-success">Adicionar</button>
             </div>
-            <button type="button" class="btn btn-success">Success</button>
-          </div>
           </div>
         </div>
       </form>
     </div>
   </div>
-  </section>
+</section>
 
-  <footer>
-    <div class="rodape">
-<span>Desenvolvido por Pedro Fischer</span>
+<section>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox
+          (change)="$event ? toggleAllRows() : null"
+          [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()"
+        >
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox
+          (click)="$event.stopPropagation()"
+          (change)="$event ? selection.toggle(row) : null"
+          [checked]="selection.isSelected(row)"
+        >
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="descricao">
+      <th mat-header-cell *matHeaderCellDef> Descrição</th>
+      <td mat-cell *matCellDef="let element"> {{element.descricao}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="acoes">
+      <th mat-header-cell *matHeaderCellDef> Ações </th>
+      <td mat-cell *matCellDef="let row">
+          <button mat-stroked-button>
+              Editar
+          </button>
+          <button (click)="excluir(row)" mat-stroked-button>
+            Excluir
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayColumns;"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[20]" showFirstLastButtons></mat-paginator>
+</section>
+
+<!-- <section>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">
+          Tarefas:
+        </h5>
+        <ul class="list-group">
+          <ng-container *ngFor="let tarefa of tarefas; let i = index">
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-2">
+                    <input class="form-check-input me-1" type="checkbox" value="" id="firstCheckbox">
+                  </div>
+                  <div class="col-8">
+                    <label class="form-check-label" for="firstCheckbox">{{tarefa.descricao}}</label>
+                  </div>
+                  <div class="col-2">
+                    <button type="button" class="btn btn-warning icones">
+                      <i class="fa-regular fa-pen-to-square">
+                      </i>
+                    </button>
+                    <button type="button" class="btn btn-danger icones">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </li>
+          </ng-container>
+        </ul>
+      </div>
     </div>
-  </footer>
+  </section> -->
 
+<footer>
+  <div class="rodape">
+    <span>Desenvolvido por Pedro Fischer</span>
+  </div>
+</footer>
 
-
-  <router-outlet></router-outlet>
-
-
+<router-outlet></router-outlet>
