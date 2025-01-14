@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, Param, Delete } from '@nestjs/common';
+import { Concluido } from './concluir';
+import { Body, Controller, Get, Post, Param, Delete, Put } from '@nestjs/common';
 import { AppService } from './app.service';
-import { CreateItemDto } from './create-item.dto';
 import { ApiParam } from '@nestjs/swagger';
+import { ItemDto } from './item.dto';
 
 @Controller('tasks')
 export class AppController {
@@ -24,7 +25,7 @@ export class AppController {
   }
 
   @Post()
-  async incluir(@Body() createItemDto : CreateItemDto) {
+  async incluir(@Body() createItemDto : ItemDto) {
     return await this.appService.postData(createItemDto);
   }
 
@@ -35,4 +36,15 @@ export class AppController {
     return await this.appService.excluir(params.id);
   }
 
+  @Put()
+  async editar(@Body() editarItemDto) {
+
+    return await this.appService.editar(editarItemDto)
+
+  }
+
+  @Put("/concluir")
+  async conlcuir(@Body() concluido : Concluido){
+    return await this.appService.concluir(concluido.id);
+  }
 }

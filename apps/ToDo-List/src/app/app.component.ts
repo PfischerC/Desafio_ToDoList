@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, inject, OnInit, ViewChild, viewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  inject,
+  OnInit,
+  ViewChild,
+  ChangeDetectorRef
+} from '@angular/core';
 import { RouterModule } from '@angular/router';
 import {
   FormBuilder,
@@ -11,10 +18,12 @@ import { CommonModule } from '@angular/common';
 import { TodoItem } from './TodoItem';
 import { HttpService } from './services/http.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatButtonModule } from '@angular/material/button'
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon'
 
 @Component({
   imports: [
@@ -25,7 +34,9 @@ import { MatButtonModule } from '@angular/material/button'
     MatTableModule,
     MatCheckboxModule,
     MatPaginatorModule,
-    MatButtonModule
+    MatButtonModule,
+    MatToolbarModule,
+    MatIconModule
   ],
   standalone: true,
   selector: 'app-root',
@@ -33,23 +44,31 @@ import { MatButtonModule } from '@angular/material/button'
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit, AfterViewInit {
-
   public tarefaForm!: FormGroup;
   public tarefas: TodoItem[] = [];
+  public editarForm!: FormGroup;
 
-  public displayColumns : string[] = ['select', 'descricao', 'acoes'];
-  public dataSource : MatTableDataSource<TodoItem> = new MatTableDataSource();
-  public selection = new SelectionModel<TodoItem>(true,[]);
+  public displayColumns: string[] = ['select', 'descricao', 'acoes'];
+  public dataSource: MatTableDataSource<TodoItem> = new MatTableDataSource();
+  public selection = new SelectionModel<TodoItem>(true, []);
 
-  @ViewChild(MatPaginator) paginator! : MatPaginator;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private _fb = inject(FormBuilder);
 
   private _http = inject(HttpService);
 
+  private cdr = inject(ChangeDetectorRef);
+
+  private idEdit? = '';
+
   ngOnInit(): void {
     this.dataSource.paginator = this.paginator;
     this.tarefaForm = this._fb.group({
+      tarefa: ['', Validators.required],
+    });
+
+    this.editarForm = this._fb.group({
       tarefa: ['', Validators.required],
     });
   }
@@ -57,22 +76,28 @@ export class AppComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.resgatarTarefas();
     this.paginator.page.subscribe(() => {
-      this.resgatarTarefas()
-      this.dataSource.paginator = this.paginator;
-    })
+      this.atualizarGrid();
+    });
   }
 
   public incluir() {
+    if (!this.tarefaForm.get('tarefa')?.value) {
+      return;
+    }
+
     const item: TodoItem = {
       descricao: this.tarefaForm.get('tarefa')?.value,
       concluido: false,
     };
 
-    this._http.incluirTarefa(item).subscribe((x) => console.log(x));
+    this._http.incluirTarefa(item).subscribe(() => {
+      this.atualizarGrid();
+      this.tarefaForm.get('tarefa')?.reset();
+    });
   }
 
   public isAllSelected() {
-    const numSelected = this.selection.select.length
+    const numSelected = this.selection.select.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
   }
@@ -87,39 +112,45 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   public excluir(row?: TodoItem) {
-    this._http.excluir(row?.id);
-  }
-
-  private resgatarTarefas() {
-    const paginaAtual = this.paginator.pageIndex+1;
-    const tamanhoPagina = this.paginator.pageSize;
-    this._http.resgatarTarefas(paginaAtual, tamanhoPagina).subscribe((response) => {
-      this.dataSource.data = response;
+    this._http.excluir(row?.id).subscribe(() => {
+      this.atualizarGrid();
     });
   }
 
-  //   todoList : TodoItem[] = [];
-  //   newTask = ''
+  public preencherInputEditar(row?: TodoItem){
+    this.editarForm.get('tarefa')?.setValue(row?.descricao)
+    this.idEdit = row?.id
+  }
 
-  //   addTask():void{
-  //     if(this.newTask.trim() !== ''){
+  public editar() {
+    if (!this.editarForm.get('tarefa')?.value) {
+      return;
+    }
 
-  //       const newTodoItem : TodoItem = {
-  //         id : Date.now(),
-  //         task : this.newTask,
-  //         completed : false
-  //       }
+    const descricaoAtualizada = this.editarForm.get('tarefa')?.value;
+    this._http.editar(descricaoAtualizada, this.idEdit).subscribe(() => {
+      this.atualizarGrid();
+    });
+  }
 
-  //       this.todoList.push(newTodoItem)
-  //       this.newTask = ''
-  //     }
-  //   }
+  public concluir(row?: TodoItem) {
+    this._http.concluir(row?.id).subscribe(() => {
+      this.atualizarGrid();
+    });
+  }
 
-  //   toggleCompleted(index:number):void{
-  //     this.todoList[index].completed= !this.todoList[index].completed
-  //   }
+  private resgatarTarefas() {
+    const paginaAtual = this.paginator.pageIndex + 1;
+    const tamanhoPagina = this.paginator.pageSize;
+    this._http
+      .resgatarTarefas(paginaAtual, tamanhoPagina)
+      .subscribe((response) => {
+        this.dataSource.data = response;
+      });
+  }
 
-  //   deleteTask(id: number):void{
-  //     this.todoList = this.todoList.filter(item => item.id !== id)
-  //   }
+  private atualizarGrid() {
+    this.resgatarTarefas();
+    this.dataSource.paginator = this.paginator;
+  }
 }
