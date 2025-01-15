@@ -14,6 +14,8 @@
    ```npx install```
    para baixar as dependências do projeto.
 3. Rode o projeto pela extensão do próprio NX (NX console).
+4. Na pasta da API, no terminal, rodar o comando:
+   ```npx prisma generate```
 
 # 📄 Documentação da API
 Acesse a documentação da API pelo link:
